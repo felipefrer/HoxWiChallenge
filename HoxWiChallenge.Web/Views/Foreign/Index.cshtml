@@ -1,0 +1,227 @@
+﻿@model IEnumerable<HoxWiChallenge.Web.Models.ViewModel.ForeignViewModel>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<hr />
+
+<div></div>
+<div id="foreignModal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Foreign</h5>
+            </div>
+            <div id="modalBody" class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button id="btnModal" type="button" class="btn btn-primary">Save changes</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="form-group">
+    <button id="newForeign" type="button" class="btn btn-primary">
+        <span class="glyphicon glyphicon-plus"></span>
+        New
+    </button>
+</div>
+
+<table class="table table-condensed table-striped">
+    <tr>
+        <th class="hidden">
+            @Html.DisplayNameFor(model => model.Id)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FistName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.SureName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.BornDate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Nationality)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Arrived)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.KindOfVisa)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model) {
+    <tr>
+        <td class="hidden">
+            @Html.HiddenFor(modelItem => item.Id)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.FistName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.SureName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.BornDate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Nationality)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.Arrived)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.KindOfVisa)
+        </td>
+        <td>
+            <button type="button" class="btn btn-xs btn-warning">
+                <span class="glyphicon glyphicon-edit"></span>
+            </button>
+            <button type="button" class="btn btn-xs btn-danger">
+                <span class="glyphicon glyphicon-remove"></span>
+            </button>
+        </td>
+    </tr>
+        }
+
+</table>
+
+@section scripts {
+
+    <link href="~/Content/toastr.css" rel="stylesheet" />
+    <link href="~/Content/jquery.alertable.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.alertable.js"></script>
+    <script src="~/Scripts/toastr.js"></script>
+    <script type="text/javascript">
+
+    $(document).ready(configControls);
+
+    function configControls() {
+
+        toastrConfig();
+
+        newClickHandler();
+
+        editForeign();
+
+        deleteForeign();
+
+    }
+
+    function toastrConfig() {
+
+        toastr.options = {
+            "closeButton": false,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": false,
+            "positionClass": "toast-top-right",
+            "preventDuplicates": true,
+            "onclick": null,
+            "showDuration": "300",
+            "hideDuration": "1000",
+            "timeOut": "5000",
+            "extendedTimeOut": "1000",
+            "showEasing": "swing",
+            "hideEasing": "linear",
+            "showMethod": "fadeIn",
+            "hideMethod": "fadeOut"
+        }
+    }
+
+    function newClickHandler() {
+
+        $("#newForeign").on("click", function(event) {
+
+            event.preventDefault();
+            openModel()
+        })
+    }
+
+    function openModel()
+    {
+
+        // Load contente into the modal body
+        $(".modal-body").load("@Url.Action("ForeignForm")", function () {
+
+            // showing modal
+            $("#foreignModal").modal({
+
+                show: true,
+                keyboard: false,
+                backdrop: 'static',
+            });
+
+        });
+
+        // Config button into the modal.
+        $("#btnModal").on("click", function (event) {
+
+            event.preventDefault();
+
+            $.post("@Url.Action("Create")", $("form").serialize(), function (data, status) {
+
+            }).done(function (data) {
+
+                toastr[data.Success == true ? "success" : "warning"](data.Message);
+
+            }).fail(function (data) {
+
+                toastr["error"](data.Message);
+            });
+        });
+    }
+
+    function deleteForeign(hid) {
+
+        $(".btn-danger").on("click", function (event) {
+
+            event.preventDefault();
+
+            var btn = $(this);
+
+            $.alertable.confirm("Are you sure about this?").then(function () {
+
+                $.post("@Url.Action("Delete")", { hidForeign: getRowId(btn) }, function (data, status) {
+
+                }).done(function (data) {
+
+                    toastr[data.Success == true ? "success" : "warning"](data.Message);
+
+                }).fail(function (data) {
+
+                    toastr["error"](data.Message);
+                })
+            });
+
+        });
+
+    }
+
+    function editForeign(hid) {
+
+        $(".btn-warning").on("click", function (event) {
+
+            event.preventDefault();
+
+            alert("Edit was clicked!")
+
+        });
+
+    }
+
+    function getRowId(btn)
+    {
+        return $(btn).closest("tr").find(".hidden").val();
+    }
+
+    </script>
+
+}

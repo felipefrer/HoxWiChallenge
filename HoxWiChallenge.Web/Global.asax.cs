@@ -1,13 +1,9 @@
-﻿using HoxWiChallage.AutoMapper;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using HoxWiChallenge.Web.AutoMapper;
 using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
 
-namespace HoxWiChallage
+namespace HoxWiChallenge.Web
 {
     public class MvcApplication : System.Web.HttpApplication
     {
@@ -17,7 +13,6 @@ namespace HoxWiChallage
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
-
             AutoMapperWebConfig.Configure();
         }
     }
