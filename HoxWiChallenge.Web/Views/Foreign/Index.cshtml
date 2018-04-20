@@ -31,89 +31,76 @@
     </button>
 </div>
 
-<table class="table table-condensed table-striped">
-    <tr>
-        <th class="hidden">
-            @Html.DisplayNameFor(model => model.Id)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.FistName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.SureName)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.BornDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Nationality)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Arrived)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.KindOfVisa)
-        </th>
-        <th></th>
-    </tr>
-
-    @foreach (var item in Model) {
-    <tr>
-        <td class="hidden">
-            @Html.HiddenFor(modelItem => item.Id)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.FistName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.SureName)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.BornDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Nationality)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Arrived)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.KindOfVisa)
-        </td>
-        <td>
-            <button type="button" class="btn btn-xs btn-warning">
-                <span class="glyphicon glyphicon-edit"></span>
-            </button>
-            <button type="button" class="btn btn-xs btn-danger">
-                <span class="glyphicon glyphicon-remove"></span>
-            </button>
-        </td>
-    </tr>
-        }
-
+<table id="gridForeign" class="table table-condensed table-hover table-striped">
+    <thead>
+        <tr>
+            <th data-column-id="Id" data-type="numeric" visible="false">Id</th>
+            <th data-column-id="FistName">Fist Name</th>
+            <th data-column-id="SureName">Sure Name</th>
+            <th data-column-id="BornDate" data-converter="datetime">Born Date</th>
+            <th data-column-id="Nationality">Nationality</th>
+            <th data-column-id="Arrived" data-converter="datetime">Arrived Date</th>
+            <th data-column-id="action" data-formatter="actions" data-sortable="false"></th>
+        </tr>
+    </thead>
 </table>
+
 
 @section scripts {
 
+    <link href="~/Content/jquery.bootgrid.css" rel="stylesheet" />
     <link href="~/Content/toastr.css" rel="stylesheet" />
     <link href="~/Content/jquery.alertable.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery.bootgrid.js"></script>
     <script src="~/Scripts/jquery.alertable.js"></script>
     <script src="~/Scripts/toastr.js"></script>
+    <script src="~/Scripts/moment.js"></script>
     <script type="text/javascript">
 
     $(document).ready(configControls);
 
     function configControls() {
 
+        configBootgrid();
+
         toastrConfig();
 
         newClickHandler();
+    }
 
-        editForeign();
+    function configBootgrid() {
 
-        deleteForeign();
+        var grid = $("#gridForeign").bootgrid({
+            ajax: true,
+            url: "@Url.Action("GetForeigns")",
+            formatters: {
+                "actions": function (column, row) {
+                    return "<button data-row-id=\"" + row.Id + "\" type=\"button\" class=\"btn btn-warning btn-xs command-edit\">" +
+                        "<span class=\"glyphicon glyphicon-edit\"></span>" +
+                        "</button>" +
+                        " " +
+                        "<button data-row-id=\"" + row.Id + "\" type=\"button\" class=\"btn btn-danger btn-xs command-delete\">" +
+                        "<span class=\"glyphicon glyphicon-remove\"></span>" +
+                        "</button>";
+                },
+                converters: {
+                    datetime: {
+                        from: function (value) { return moment(value); },
+                        to: function (value) { return moment(value).format("L"); }
+                    }
+                }
+            }
+        }).on("loaded.rs.jquery.bootgrid", function () {
+            /* Executes after data is loaded and rendered */
+            grid.find(".command-edit").on("click", function (e) {
+                editForeign($(this).data("row-id"));
+            }).end().find(".command-delete").on("click", function (e) {
+                deleteForeign($(this).data("row-id"));
+            });
+        });
 
     }
+
 
     function toastrConfig() {
 
@@ -164,8 +151,6 @@
         // Config button into the modal.
         $("#btnModal").on("click", function (event) {
 
-            event.preventDefault();
-
             $.post("@Url.Action("Create")", $("form").serialize(), function (data, status) {
 
             }).done(function (data) {
@@ -181,39 +166,25 @@
 
     function deleteForeign(hid) {
 
-        $(".btn-danger").on("click", function (event) {
+        $.alertable.confirm("Are you sure about this?").then(function () {
 
-            event.preventDefault();
+            $.post("@Url.Action("Delete")", { hidForeign: hid }, function (data, status) {
 
-            var btn = $(this);
+            }).done(function (data) {
 
-            $.alertable.confirm("Are you sure about this?").then(function () {
+                toastr[data.Success == true ? "success" : "warning"](data.Message);
 
-                $.post("@Url.Action("Delete")", { hidForeign: getRowId(btn) }, function (data, status) {
+            }).fail(function (data) {
 
-                }).done(function (data) {
-
-                    toastr[data.Success == true ? "success" : "warning"](data.Message);
-
-                }).fail(function (data) {
-
-                    toastr["error"](data.Message);
-                })
-            });
-
+                toastr["error"](data.Message);
+            })
         });
 
     }
 
     function editForeign(hid) {
 
-        $(".btn-warning").on("click", function (event) {
-
-            event.preventDefault();
-
-            alert("Edit was clicked!")
-
-        });
+        alert("Edit was clicked!");
 
     }
 

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using HoxWi.Db;
 using HoxWiChallenge.Web.Models;
+using HoxWiChallenge.Web.Models.DTO;
 using HoxWiChallenge.Web.Models.ViewModel;
 using Newtonsoft.Json;
 using System;
@@ -33,6 +34,26 @@ namespace HoxWiChallenge.Web.Controllers
 
         #region Methods
 
+        public JsonResult GetForeigns()
+        {
+            var searchForeignHoxWi = new SearchRequest("Foreign", WebConfigurationManager.AppSettings["HoxDbApiSecret"]);
+
+            var hoxWiSearchResult = _hoxWiClient.Search(searchForeignHoxWi);
+
+            var jsonResult = JsonConvert.SerializeObject(hoxWiSearchResult.Results);
+            var foreign = JsonConvert.DeserializeObject<List<Foreign>>(jsonResult);
+
+            var bootgridResponseDto = new BootgridResponseDTO<ForeignViewModel>
+            {
+                current = 1,
+                rowCount = 5,
+                rows = Mapper.Map<List<Foreign>, List<ForeignViewModel>>(foreign),
+                total = 3
+            };
+
+            return Json(bootgridResponseDto);
+        }
+
         public PartialViewResult ForeignForm()
         {
             return PartialView("_ForeignForm");
@@ -42,7 +63,7 @@ namespace HoxWiChallenge.Web.Controllers
         {
             var searchForeignHoxWi = new SearchRequest("Foreign", WebConfigurationManager.AppSettings["HoxDbApiSecret"]);
 
-            var hoxWiSearchResult = _hoxWiClient.Search(searchForeignHoxWi);           
+            var hoxWiSearchResult = _hoxWiClient.Search(searchForeignHoxWi);
 
             var jsonResult = JsonConvert.SerializeObject(hoxWiSearchResult.Results);
             var foreign = JsonConvert.DeserializeObject<List<Foreign>>(jsonResult);
@@ -86,12 +107,12 @@ namespace HoxWiChallenge.Web.Controllers
 
             return Json(hoxWiResponse);
         }
-        
+
         [HttpPost]
         public JsonResult Delete(string hidForeign)
         {
             var deleteSearchRequest = new SearchRequest("Foreign", new { _id = hidForeign });
-            
+
             var hoxWiResponse = _hoxWiClient.Delete(deleteSearchRequest);
 
             hoxWiResponse.Message = hoxWiResponse.Success ? "Foreign has been deleted!" : "Oops, something wrong happened!";
