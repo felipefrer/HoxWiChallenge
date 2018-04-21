@@ -172,17 +172,20 @@
     <Compile Include="AutoMapper\HoxWiResultToModelProfile.cs" />
     <Compile Include="AutoMapper\ModelToViewModelProfile.cs" />
     <Compile Include="AutoMapper\ViewModelTodModelProfile.cs" />
+    <Compile Include="Binders\BootgridBinder.cs" />
     <Compile Include="Controllers\ForeignController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\DTO\BootgridRequestDTO.cs" />
     <Compile Include="Models\DTO\BootgridResponseDTO.cs" />
     <Compile Include="Models\Foreign.cs" />
     <Compile Include="Models\HoxWi\HoxWiModel.cs" />
     <Compile Include="Models\HoxWi\IHoxWiModel.cs" />
     <Compile Include="Models\ViewModel\ForeignViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Util\ApplicationParser.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
@@ -191,6 +194,7 @@
     <None Include="Scripts\jquery-1.11.1.intellisense.js" />
     <Content Include="Content\jquery.bootgrid.css" />
     <Content Include="Content\jquery.bootgrid.min.css" />
+    <Content Include="Scripts\Application\foreign.js" />
     <Content Include="Scripts\jquery-1.11.1.js" />
     <Content Include="Scripts\jquery-1.11.1.min.js" />
     <Content Include="Scripts\jquery.alertable.js" />
@@ -247,7 +251,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="BusinessLogic\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

@@ -3,7 +3,9 @@ using HoxWi.Db;
 using HoxWiChallenge.Web.Models;
 using HoxWiChallenge.Web.Models.DTO;
 using HoxWiChallenge.Web.Models.ViewModel;
+using HoxWiChallenge.Web.Util;
 using Newtonsoft.Json;
+using SmartHourRegister.Web.DTO;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -34,41 +36,50 @@ namespace HoxWiChallenge.Web.Controllers
 
         #region Methods
 
-        public JsonResult GetForeigns()
+        public JsonResult GetForeigns(BootgridRequestDTO bootgridRequestDTO)
         {
-            var searchForeignHoxWi = new SearchRequest("Foreign", WebConfigurationManager.AppSettings["HoxDbApiSecret"]);
+            var searchForeignHoxWi = new SearchRequest("Foreign", WebConfigurationManager.AppSettings["HoxDbApiSecret"], bootgridRequestDTO.RowCount, "_id");
 
             var hoxWiSearchResult = _hoxWiClient.Search(searchForeignHoxWi);
 
-            var jsonResult = JsonConvert.SerializeObject(hoxWiSearchResult.Results);
-            var foreign = JsonConvert.DeserializeObject<List<Foreign>>(jsonResult);
+            var lstForeign = ApplicationParser<Foreign>.ParseToList(hoxWiSearchResult.Results);
+
+            var lstForeignViewModel = Mapper.Map<List<Foreign>, List<ForeignViewModel>>(lstForeign);
 
             var bootgridResponseDto = new BootgridResponseDTO<ForeignViewModel>
             {
-                current = 1,
-                rowCount = 5,
-                rows = Mapper.Map<List<Foreign>, List<ForeignViewModel>>(foreign),
-                total = 3
+                current = bootgridRequestDTO.Current,
+                rowCount = bootgridRequestDTO.RowCount,
+                rows = lstForeignViewModel,
+                total = lstForeignViewModel.Count()
             };
 
             return Json(bootgridResponseDto);
         }
 
-        public PartialViewResult ForeignForm()
+        public PartialViewResult ForeignForm(string foreignId)
         {
-            return PartialView("_ForeignForm");
+            ForeignViewModel foreignViewModel = null;
+
+            if (!string.IsNullOrWhiteSpace(foreignId))
+            {
+                var searchForeignHoxWi = new SearchRequest("Foreign", WebConfigurationManager.AppSettings["HoxDbApiSecret"], new { _id = foreignId });
+
+                var hoxWiSearchResult = _hoxWiClient.Search(searchForeignHoxWi);
+
+                if (hoxWiSearchResult.Results.Count() > 0)
+                {
+                    var foreign = ApplicationParser<Foreign>.Parse(hoxWiSearchResult.Results);
+                    foreignViewModel = Mapper.Map<Foreign, ForeignViewModel>(foreign);
+                }
+            }           
+            
+            return PartialView("_ForeignForm", foreignViewModel);
         }
 
         public ActionResult Index()
         {
-            var searchForeignHoxWi = new SearchRequest("Foreign", WebConfigurationManager.AppSettings["HoxDbApiSecret"]);
-
-            var hoxWiSearchResult = _hoxWiClient.Search(searchForeignHoxWi);
-
-            var jsonResult = JsonConvert.SerializeObject(hoxWiSearchResult.Results);
-            var foreign = JsonConvert.DeserializeObject<List<Foreign>>(jsonResult);
-
-            return View(Mapper.Map<List<Foreign>, List<ForeignViewModel>>(foreign));
+            return View();
         }
 
         [HttpPost]
