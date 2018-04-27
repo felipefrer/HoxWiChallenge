@@ -1,18 +1,19 @@
 ﻿using HoxWiChallenge.Web.Models.HoxWi;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace HoxWiChallenge.Web.Models
 {
     public class Foreign : HoxWiModel
     {
+        #region Properties
+
         public string FistName { get; set; }
-        public string SureName { get; set; }
-        public DateTime BornDate { get; set; }
+        public string Surname { get; set; }
+        public DateTime BirthdayDate { get; set; }
         public string Nationality { get; set; }
-        public DateTime Arrived { get; set; }
-        public string KindOfVisa { get; set; }
+        public DateTime Arrival { get; set; }
+        public string Visa { get; set; }
+
+        #endregion     
     }
 }
