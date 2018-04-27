@@ -25,11 +25,5 @@ namespace HoxWiChallenge.Web.AutoMapper
         public override string ProfileName => "ViewModelTodModelProfile";
 
         #endregion
-
-        #region Methods
-
-
-
-        #endregion
     }
 }

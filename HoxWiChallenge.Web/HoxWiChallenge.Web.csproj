@@ -169,7 +169,6 @@
     <Compile Include="App_Start\NinjectWebCommon.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="AutoMapper\AutoMapperWebConfig.cs" />
-    <Compile Include="AutoMapper\HoxWiResultToModelProfile.cs" />
     <Compile Include="AutoMapper\ModelToViewModelProfile.cs" />
     <Compile Include="AutoMapper\ViewModelTodModelProfile.cs" />
     <Compile Include="Binders\BootgridBinder.cs" />

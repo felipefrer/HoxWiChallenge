@@ -16,7 +16,6 @@ namespace HoxWiChallenge.Web.AutoMapper
         {
             cfg.AddProfile<ModelToViewModelProfile>();
             cfg.AddProfile<ViewModelTodModelProfile>();
-            cfg.AddProfile<HoxWiResultToModelProfile>();
         });
 
         #endregion

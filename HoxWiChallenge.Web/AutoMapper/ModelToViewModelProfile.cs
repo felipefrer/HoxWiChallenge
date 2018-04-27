@@ -22,10 +22,5 @@ namespace HoxWiChallenge.Web.AutoMapper
 
         #endregion
 
-        #region Methods
-
-
-
-        #endregion
     }
 }
