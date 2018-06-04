@@ -189,7 +189,6 @@
     <Compile Include="Business\Interfaces\IBusiness.cs" />
     <Compile Include="Business\Interfaces\IForeignBusiness.cs" />
     <Compile Include="Controllers\ForeignController.cs" />
-    <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\HoxWiChallengeController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
