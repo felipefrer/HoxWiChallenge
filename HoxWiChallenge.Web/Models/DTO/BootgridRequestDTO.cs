@@ -20,7 +20,7 @@ namespace SmartHourRegister.Web.DTO
             Current = int.Parse(formRequest["current"]);
             RowCount = int.Parse(formRequest["rowCount"]);
             SearchPhrase = formRequest["searchPhrase"].ToString();
-            Sort = $"{sortProperty} {formRequest[orderKey]}";
+            Sort = sortProperty;
         }
 
         #endregion

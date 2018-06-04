@@ -1,4 +1,5 @@
-﻿using HoxWiChallenge.Web.AutoMapper;
+﻿using FluentValidation.Mvc;
+using HoxWiChallenge.Web.AutoMapper;
 using HoxWiChallenge.Web.Binders;
 using SmartHourRegister.Web.DTO;
 using System.Web.Mvc;
@@ -18,6 +19,7 @@ namespace HoxWiChallenge.Web
 
             ModelBinders.Binders.Add(typeof(BootgridRequestDTO), new BootgridBinder());
             AutoMapperWebConfig.Configure();
+            FluentValidationModelValidatorProvider.Configure();
         }
     }
 }

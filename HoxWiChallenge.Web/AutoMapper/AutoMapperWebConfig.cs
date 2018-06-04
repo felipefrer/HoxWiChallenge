@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using System;
 
 namespace HoxWiChallenge.Web.AutoMapper
 {
@@ -16,6 +17,9 @@ namespace HoxWiChallenge.Web.AutoMapper
         {
             cfg.AddProfile<ModelToViewModelProfile>();
             cfg.AddProfile<ViewModelTodModelProfile>();
+
+            cfg.CreateMap<int, Gender>().ConvertUsing(x => (Gender)Enum.Parse(typeof(Gender), x.ToString()));
+            cfg.CreateMap<Gender, int>().ConvertUsing(x => (int)x);
         });
 
         #endregion

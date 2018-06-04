@@ -1,51 +1,60 @@
 ﻿using AutoMapper;
 using HoxWi.Db;
+using HoxWiChallenge.Web.Business.Interfaces;
 using HoxWiChallenge.Web.Models;
 using HoxWiChallenge.Web.Models.DTO;
+using HoxWiChallenge.Web.Models.HoxWi;
 using HoxWiChallenge.Web.Models.ViewModel;
-using HoxWiChallenge.Web.Util;
-using Newtonsoft.Json;
 using SmartHourRegister.Web.DTO;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Linq;
-using System.Web;
 using System.Web.Configuration;
 using System.Web.Mvc;
 
 namespace HoxWiChallenge.Web.Controllers
 {
-    public class ForeignController : Controller
+    public class ForeignController : HoxWiChallengeController
     {
         #region Constructors
 
-        public ForeignController(IClient client)
+        public ForeignController(IForeignBusiness foreignBusiness)
         {
-            _hoxWiClient = client;
+            _foreignBusiness = foreignBusiness;
         }
 
         #endregion
 
         #region Properties
 
-        private readonly IClient _hoxWiClient;
+        private readonly IForeignBusiness _foreignBusiness;
 
         #endregion
 
         #region Methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bootgridRequestDTO"></param>
+        /// <returns></returns>
         public JsonResult GetForeigns(BootgridRequestDTO bootgridRequestDTO)
         {
-            var searchForeignHoxWi = new SearchRequest("Foreign", WebConfigurationManager.AppSettings["HoxDbApiSecret"], bootgridRequestDTO.RowCount, "_id");
+            var lstForeign = _foreignBusiness.GetAllForeign(bootgridRequestDTO.SearchPhrase, bootgridRequestDTO.Skip, bootgridRequestDTO.RowCount, bootgridRequestDTO.Sort);
 
-            var hoxWiSearchResult = _hoxWiClient.Search(searchForeignHoxWi);
-
-            var lstForeign = ApplicationParser<Foreign>.ParseToList(hoxWiSearchResult.Results);
-
+            // Mapping business model to view model.
             var lstForeignViewModel = Mapper.Map<List<Foreign>, List<ForeignViewModel>>(lstForeign);
 
+            // Building bootgridresponse from view model.
             var bootgridResponseDto = new BootgridResponseDTO<ForeignViewModel>
             {
                 current = bootgridRequestDTO.Current,
@@ -57,90 +66,95 @@ namespace HoxWiChallenge.Web.Controllers
             return Json(bootgridResponseDto);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="foreignId"></param>
+        /// <returns></returns>
         public PartialViewResult ForeignForm(string foreignId)
         {
-            ForeignViewModel foreignViewModel = null;
+            var foreign = _foreignBusiness.GetForeignById(foreignId);
 
-            if (!string.IsNullOrWhiteSpace(foreignId))
-            {
-                var searchForeignHoxWi = new SearchRequest("Foreign", WebConfigurationManager.AppSettings["HoxDbApiSecret"], new { _id = foreignId });
-
-                var hoxWiSearchResult = _hoxWiClient.Search(searchForeignHoxWi);
-
-                if (hoxWiSearchResult.Results.Count() > 0)
-                {
-                    var foreign = ApplicationParser<Foreign>.Parse(hoxWiSearchResult.Results);
-                    foreignViewModel = Mapper.Map<Foreign, ForeignViewModel>(foreign);
-                }
-            }           
+            var foreignViewModel = Mapper.Map<Foreign, ForeignViewModel>(foreign);
             
             return PartialView("_ForeignForm", foreignViewModel);
         }
 
-        public ActionResult Index()
-        {
-            return View();
-        }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="foreignViewModel"></param>
+        /// <returns></returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult Create(ForeignViewModel foreignViewModel)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return Json(new BasicResponse { Success = false, Error = GetModelStateErros() });
+                if (!ModelState.IsValid)
+                {
+                    return Json(new AppResponseDTO { Success = false, Message = GetModelStateErros() });
+                }
+
+                var foreign = Mapper.Map<ForeignViewModel, Foreign>(foreignViewModel);
+
+                var businessResult = _foreignBusiness.InsertNewForeign(foreign);
+
+                return Json(new AppResponseDTO { Success = businessResult.Item1, Message = businessResult.Item2 });
             }
-
-            var foreign = Mapper.Map<ForeignViewModel, Foreign>(foreignViewModel);
-
-            var insertForeignHoxWi = new InsertRequest("Foreign", foreign);
-
-            var hoxWiResponse = _hoxWiClient.Add(insertForeignHoxWi);
-
-            hoxWiResponse.Message = hoxWiResponse.Success ? "Foreign has been included!" : "Oops, something wrong happened!";
-
-            return Json(hoxWiResponse);
+            catch (Exception)
+            {
+                return Json(new AppResponseDTO { Success = false, Message = "Oops, something wrong happened!" });
+            }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="foreignViewModel"></param>
+        /// <returns></returns>
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public JsonResult Update(ForeignViewModel foreignViewModel)
         {
-            if (!ModelState.IsValid)
+            try
             {
-                return Json(new BasicResponse { Success = false, Error = GetModelStateErros() });
+                if (!ModelState.IsValid)
+                {
+                    return Json(new AppResponseDTO { Success = false, Message = GetModelStateErros() });
+                }
+
+                var foreign = Mapper.Map<ForeignViewModel, Foreign>(foreignViewModel);
+
+                var businessResult = _foreignBusiness.UpdateForeign(foreign);
+
+                return Json(new AppResponseDTO { Success = businessResult.Item1, Message = businessResult.Item2 });
             }
-
-            var foreign = Mapper.Map<ForeignViewModel, Foreign>(foreignViewModel);
-
-            var updateForeignHoxWi = new UpdateRequest("Foreign", foreign);
-
-
-            var hoxWiResponse = _hoxWiClient.Update(updateForeignHoxWi);
-
-            return Json(hoxWiResponse);
+            catch (Exception)
+            {
+                return Json(new AppResponseDTO() { Success = false, Message = "Oops, something wrong happened!" });
+            }
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="hidForeign"></param>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult Delete(string hidForeign)
         {
-            var deleteSearchRequest = new SearchRequest("Foreign", new { _id = hidForeign });
+            try
+            {
+                _foreignBusiness.Remove(hidForeign);
 
-            var hoxWiResponse = _hoxWiClient.Delete(deleteSearchRequest);
-
-            hoxWiResponse.Message = hoxWiResponse.Success ? "Foreign has been deleted!" : "Oops, something wrong happened!";
-
-            return Json(hoxWiResponse);
-        }
-
-        public string GetModelStateErros()
-        {
-            var lstErros = ModelState.Select(e => e.Value.Errors).Where(x => x.Count > 0).ToList();
-
-            var erros = string.Empty;
-
-            lstErros.ForEach(e => erros += e.FirstOrDefault()?.ErrorMessage + "<br/>");
-
-            return erros;
-        }
+                return Json(new AppResponseDTO() { Success = true, Message = "Foreign has been deleted!" });
+            }
+            catch (Exception)
+            {
+                return Json(new AppResponseDTO() { Success = true, Message = "Oops, something wrong happened!" });
+            }            
+        }      
 
         #endregion
     }

@@ -1,5 +1,7 @@
 ﻿$(document).ready(configControls);
 
+var grid;
+
 function configControls() {
 
     configBootgrid();
@@ -9,9 +11,16 @@ function configControls() {
     newClickHandler();
 }
 
+function configDatePiker() {
+
+    $('.form-control.date').datepicker({
+        format: "dd/mm/yyyy"
+    });
+}
+
 function configBootgrid() {
 
-    var grid = $("#gridForeign").bootgrid({
+    grid = $("#gridForeign").bootgrid({
         ajax: true,
         url: getForeignUrl,
         formatters: {
@@ -23,12 +32,15 @@ function configBootgrid() {
                     "<button data-row-id=\"" + row.Id + "\" type=\"button\" class=\"btn btn-danger btn-xs command-delete\">" +
                     "<span class=\"glyphicon glyphicon-remove\"></span>" +
                     "</button>";
+            },
+            "flag": function (column, row) {
+                return "<span class='flag-icon flag-icon-" + row.Nationality.toLowerCase() + "'></span>";
             }
         },
         converters: {
             datetime: {
                 from: function (value) { return moment(value); },
-                to: function (value) { return moment(value).format("L"); }
+                to: function (value) { return moment(value).format("DD/MM/YYYY"); }
             }
         }
     }).on("loaded.rs.jquery.bootgrid", function () {
@@ -39,6 +51,13 @@ function configBootgrid() {
             deleteForeign($(this).data("row-id"));
         });
     });
+}
+
+function bootGridReload() {
+
+    if (grid != null) {
+        grid.bootgrid("reload");
+    }
 }
 
 function toastrConfig() {
@@ -76,6 +95,12 @@ function openModel(foreignData) {
     // Load content into the modal body
     $(".modal-body").load(foreignFormUrl, foreignData, function () {
 
+        configDatePiker();
+
+        loadDropdownsContent();
+
+        $('.selectpicker').val("BR");
+
         // showing modal
         $("#foreignModal").modal({
 
@@ -83,21 +108,22 @@ function openModel(foreignData) {
             keyboard: false,
             backdrop: 'static',
         });
-
     });
 
     // Config button into the modal.
-    $("#btnModal").on("click", function (event) {
+    $("#btnModal").off().on("click", function (event) {
 
-        if (foreignData == null) {
+        var btn = $(this);
 
-            createForeign();
+        if (btn.attr("disabled") == null) {
+
+            btn.attr("disabled", true);
+
+            $.when(foreignData == null ? createForeign() : editForeign()).then(function () {
+
+                btn.removeAttr("disabled");
+            });
         }
-        else {
-
-            editForeign();
-        }
-        
     });
 }
 
@@ -116,13 +142,12 @@ function deleteForeign(hid) {
 
 function editForeign(hid) {
 
-    executePost(editForeignUrl, $("form").serialize())
+    executePost(editForeignUrl, $("form").serialize());
 }
 
+function openEditForeign(id) {
 
-function openEditForeign(hid) {
-
-    openModel({ foreignId: hid })
+    openModel({ foreignId: id })
 }
 
 function executePost(urlPost, dataPost) {
@@ -131,11 +156,53 @@ function executePost(urlPost, dataPost) {
 
     }).done(function (data) {
 
-        toastr[data.Success == true ? "success" : "warning"](data.Message);
+        toastr[data.Success == true ? "success" : "warning"](data.Message != null ? data.Message : data.Error);
+
+        if (data.Success) {
+
+            $(".modal").modal('hide');
+            bootGridReload();
+        }
 
 
     }).fail(function (data) {
 
         toastr["error"](data.Message != null ? data.Message : data.Error);
+
     })
+}
+
+function loadDropdownsContent() {
+
+    var objSource = [{ "key": "nationality", "url": "../fonts/countries.json" }, { "key": "visa", "url": "../fonts/visa.json" }]
+
+    objSource.forEach(function (source) {
+
+        var select = source.key == "visa" ? $("#visa") : $("#nationality")
+
+        $.getJSON(source.url, function (json) {
+
+            $.each(json, function (index, item) {
+
+                var content = "";
+
+                if (source.key == "visa") {
+
+                    select.append($('<option value=' + item.code + '>' + item.description + '</option>')
+                        .attr("title", item.name));
+                }
+                else {
+
+                    select.append($('<option value=' + item.code + '>' + item.name + '</option>')
+                        .attr("data-icon", 'flag-icon flag-icon-' + item.code.toLowerCase()));
+                }
+            });
+
+            select.selectpicker();
+
+            $('.selectpicker').selectpicker('render');
+
+            //$(".bs-title-option").remove();
+        });
+    });
 }

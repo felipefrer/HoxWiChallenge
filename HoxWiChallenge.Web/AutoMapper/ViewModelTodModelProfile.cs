@@ -15,7 +15,7 @@ namespace HoxWiChallenge.Web.AutoMapper
         public ViewModelTodModelProfile()
         {
             CreateMap<ForeignViewModel, Foreign>()
-                .ForMember(f => f._id, opt => opt.MapFrom(fvm => fvm.Id)); ;
+                .ForMember(f => f._id, opt => opt.MapFrom(fvm => fvm.Id));
         }
 
         #endregion
