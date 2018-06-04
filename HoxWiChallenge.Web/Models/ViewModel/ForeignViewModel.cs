@@ -36,6 +36,8 @@ namespace HoxWiChallenge.Web.Models.ViewModel
         [Display(Name = "Current Visa")]
         public string Visa { get; set; }
 
+        public string VisaName { get { return "Stamp " + Visa; } }
+
         #endregion
     }
 }

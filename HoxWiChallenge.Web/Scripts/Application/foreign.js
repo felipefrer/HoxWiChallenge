@@ -14,7 +14,9 @@ function configControls() {
 function configDatePiker() {
 
     $('.form-control.date').datepicker({
-        format: "dd/mm/yyyy"
+        format: "dd/mm/yyyy",
+        autoclose: true,
+        forceParse: true
     });
 }
 
@@ -90,16 +92,14 @@ function newClickHandler() {
     })
 }
 
-function openModel(foreignData) {
+function openModel(foreignId) {
 
     // Load content into the modal body
-    $(".modal-body").load(foreignFormUrl, foreignData, function () {
+    $(".modal-body").load(foreignFormUrl, function () {
 
         configDatePiker();
 
         loadDropdownsContent();
-
-        $('.selectpicker').val("BR");
 
         // showing modal
         $("#foreignModal").modal({
@@ -119,7 +119,7 @@ function openModel(foreignData) {
 
             btn.attr("disabled", true);
 
-            $.when(foreignData == null ? createForeign() : editForeign()).then(function () {
+            $.when(foreignId == null ? createForeign() : editForeign()).then(function () {
 
                 btn.removeAttr("disabled");
             });
@@ -147,23 +147,35 @@ function editForeign(hid) {
 
 function openEditForeign(id) {
 
+    executePost(getForeignById, { foreignId: id }, false);
+
     openModel({ foreignId: id })
 }
 
-function executePost(urlPost, dataPost) {
+function executePost(urlPost, dataPost, useToastr = true) {
 
     $.post(urlPost, dataPost, function (data, status) {
 
     }).done(function (data) {
 
-        toastr[data.Success == true ? "success" : "warning"](data.Message != null ? data.Message : data.Error);
+        if (useToastr) {
 
-        if (data.Success) {
+            toastr[data.Success == true ? "success" : "warning"](data.Message != null ? data.Message : data.Error);
 
-            $(".modal").modal('hide');
-            bootGridReload();
+            if (data.Success) {
+
+                $(".modal").modal('hide');
+                bootGridReload();
+            }
         }
+        else {
 
+            $("form").autofill(data.Data);
+            $('.selectpicker').selectpicker('render');
+            $(".form-control.date").val(moment($(".form-control.date").val()).format("DD/MM/YYYY"));
+        }
+        
+        return data;
 
     }).fail(function (data) {
 
@@ -172,7 +184,7 @@ function executePost(urlPost, dataPost) {
     })
 }
 
-function loadDropdownsContent() {
+function loadDropdownsContent(data) {
 
     var objSource = [{ "key": "nationality", "url": "../fonts/countries.json" }, { "key": "visa", "url": "../fonts/visa.json" }]
 
@@ -199,10 +211,6 @@ function loadDropdownsContent() {
             });
 
             select.selectpicker();
-
-            $('.selectpicker').selectpicker('render');
-
-            //$(".bs-title-option").remove();
         });
     });
 }

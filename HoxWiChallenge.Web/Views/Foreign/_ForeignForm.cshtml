@@ -61,12 +61,12 @@
                     @Html.LabelFor(model => model.Nationality)
                     <br />
                     @Html.DropDownListFor(model => model.Nationality,
-                                                         new List<SelectListItem>() as IEnumerable<SelectListItem>,
-                                                         new Dictionary<string, object>() { { "class", "selectpicker show-tick" },
-                                                                                   { "id", "nationality"},
-                                                                                   {"title", "Choose your nationality" },
-                                                                                   { "data-width", "280px" },
-                                                                                   {"data-live-search", "false" } })
+                                                                   new List<SelectListItem>() as IEnumerable<SelectListItem>,
+                                                                   new Dictionary<string, object>() { { "class", "selectpicker show-tick" },
+                                                                                           { "id", "nationality"},
+                                                                                           {"title", "Choose your nationality" },
+                                                                                           { "data-width", "280px" },
+                                                                                           {"data-live-search", "false" } })
                     @Html.ValidationMessageFor(model => model.Nationality)
                 </div>
 
@@ -80,12 +80,12 @@
                     @Html.LabelFor(model => model.Visa)
                     <br />
                     @Html.DropDownListFor(model => model.Visa,
-                                     new List<SelectListItem>() as IEnumerable<SelectListItem>,
-                                     new Dictionary<string, object>() { { "class", "selectpicker show-tick" },
-                                                                { "id", "visa"},
-                                                                {"title", "Choose your visa" },
-                                                                { "data-width", "280px" },
-                                                                {"data-live-search", "true" } })
+                                               new List<SelectListItem>() as IEnumerable<SelectListItem>,
+                                               new Dictionary<string, object>() { { "class", "selectpicker show-tick" },
+                                                                        { "id", "visa"},
+                                                                        {"title", "Choose your visa" },
+                                                                        { "data-width", "280px" },
+                                                                        {"data-live-search", "false" } })
                     @Html.ValidationMessageFor(model => model.Visa)
                 </div>
             </div>
@@ -96,4 +96,7 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/jquery.formautofill.js"></script>
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
 }

@@ -72,12 +72,24 @@ namespace HoxWiChallenge.Web.Controllers
         /// <param name="foreignId"></param>
         /// <returns></returns>
         public PartialViewResult ForeignForm(string foreignId)
-        {
-            var foreign = _foreignBusiness.GetForeignById(foreignId);
+        {            
+            return PartialView("_ForeignForm", null);
+        }
 
-            var foreignViewModel = Mapper.Map<Foreign, ForeignViewModel>(foreign);
-            
-            return PartialView("_ForeignForm", foreignViewModel);
+        public JsonResult GetForeignById(string foreignId)
+        {
+            try
+            {
+                var foreign = _foreignBusiness.GetForeignById(foreignId);
+
+                var foreignViewModel = Mapper.Map<Foreign, ForeignViewModel>(foreign);
+
+                return Json(new AppResponseDTO { Success = false, Message = "Foreign data!", Data = foreignViewModel });
+            }
+            catch (Exception)
+            {
+                return Json(new AppResponseDTO { Success = false, Message = "Oops, something wrong happened!" });
+            }
         }
 
         /// <summary>
