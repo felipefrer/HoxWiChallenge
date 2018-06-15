@@ -1,16 +1,28 @@
-﻿$(document).ready(configControls);
+﻿
+// Calling configControls after documento has ready.
+$(document).ready(configControls);
 
+// Bootgrid variable
 var grid;
 
+/**
+ * Function which configs all page controls.
+ */
 function configControls() {
 
+    // Adding bootgrid config.
     configBootgrid();
 
+    // Adding toastr config.
     toastrConfig();
 
-    newClickHandler();
+    // Adding button behavior.
+    newForeignClickHandler();
 }
 
+/**
+ * Function which configures a DatePicker component.
+ */
 function configDatePiker() {
 
     $('.form-control.date').datepicker({
@@ -20,6 +32,11 @@ function configDatePiker() {
     });
 }
 
+/**
+ * Function responsible for setting bootgrid config.
+ * Formatter: Manipulate the visualization of data cells..
+ * Converter: Custom converter.
+ */
 function configBootgrid() {
 
     grid = $("#gridForeign").bootgrid({
@@ -45,16 +62,51 @@ function configBootgrid() {
                 to: function (value) { return moment(value).format("DD/MM/YYYY"); }
             }
         }
-    }).on("loaded.rs.jquery.bootgrid", function () {
-        /* Executes after data is loaded and rendered */
-        grid.find(".command-edit").on("click", function (e) {
-            openEditForeign($(this).data("row-id"));
-        }).end().find(".command-delete").on("click", function (e) {
-            deleteForeign($(this).data("row-id"));
-        });
+    })
+
+    // Adding specific handle to bootgrid commands
+    grid.on("loaded.rs.jquery.bootgrid", function () {
+        // Executes after data is loaded and rendered 
+            grid.find(".command-edit").on("click", function (e) {
+                openEditForeign($(this).data("row-id"));
+            }).end().find(".command-delete").on("click", function (e) {
+                deleteForeign($(this).data("row-id"));
+            });
     });
+
+
+    // Removing some fields from bootgrid dropdown menu.
+    removeColumnsDropdownMenu();
+
+    // Adding new foreign button into bootgrid actionbar.
+    addButtonBootGrid();
 }
 
+/**
+ * Function which add a new button into the first position on bootgrid actionbar dropdown menu.
+ */
+function addButtonBootGrid() {
+
+    // Using jquery prepend() function to add a new button into the first position of component.
+    $(".actions").prepend('<button id="newForeign" type="button" class="btn btn-primary"> ' + 
+        '<span class="glyphicon glyphicon-plus"></span></button >');
+}
+
+/**
+ * Function which remove fields from bootgrid actionbar dropdown menu.
+ */
+function removeColumnsDropdownMenu() {
+
+    // Removing first element into the dropdown menu.
+    $(".pull-right:eq(1) li").first().remove();
+
+    // Removing last element into the dropdown menu.
+    $(".pull-right:eq(1) li").last().remove();
+}
+
+/**
+ * Function responsible for reloading newest data on bootgrid.
+ */
 function bootGridReload() {
 
     if (grid != null) {
@@ -62,6 +114,9 @@ function bootGridReload() {
     }
 }
 
+/**
+ * Function responsible for setting toastr config.
+ */
 function toastrConfig() {
 
     toastr.options = {
@@ -83,18 +138,24 @@ function toastrConfig() {
     }
 }
 
-function newClickHandler() {
+/**
+ * Function which configure new foreign button click.
+ */
+function newForeignClickHandler() {
 
     $("#newForeign").on("click", function (event) {
 
         event.preventDefault();
-        openModel()
+        openModel();
     })
 }
 
+/**
+ * Function responsible for config and opening a modal.
+ */
 function openModel(foreignId) {
 
-    // Load content into the modal body
+    // Load content into the modal body.
     $(".modal-body").load(foreignFormUrl, function () {
 
         configDatePiker();
@@ -115,6 +176,7 @@ function openModel(foreignId) {
 
         var btn = $(this);
 
+        // Disabling button until a server response to avoid double clicks.
         if (btn.attr("disabled") == null) {
 
             btn.attr("disabled", true);
@@ -127,11 +189,17 @@ function openModel(foreignId) {
     });
 }
 
+/**
+ * Function responsible for creating a new foreign.
+ */
 function createForeign() {
 
     executePost(createForeignUrl, $("form").serialize());
 }
 
+/**
+ * Function responsible for deleting foreign.
+ */
 function deleteForeign(hid) {
 
     $.alertable.confirm("Are you sure about this?").then(function () {
@@ -140,11 +208,17 @@ function deleteForeign(hid) {
     });
 }
 
+/**
+ * Function responsible for editing a new foreign.
+ */
 function editForeign(hid) {
 
     executePost(editForeignUrl, $("form").serialize());
 }
 
+/**
+ * Function responsible for opening a modal with foreign details to changes
+ */
 function openEditForeign(id) {
 
     executePost(getForeignById, { foreignId: id }, false);
@@ -152,6 +226,10 @@ function openEditForeign(id) {
     openModel({ foreignId: id })
 }
 
+/**
+ * Generic function which handles post request to server-side.
+ * In addition to handle request it calls toastr function to show the server response.
+ */
 function executePost(urlPost, dataPost, useToastr = true) {
 
     $.post(urlPost, dataPost, function (data, status) {
@@ -184,6 +262,9 @@ function executePost(urlPost, dataPost, useToastr = true) {
     })
 }
 
+/**
+ * Function responsible for loading dropdown content.
+ */
 function loadDropdownsContent(data) {
 
     var objSource = [{ "key": "nationality", "url": "../fonts/countries.json" }, { "key": "visa", "url": "../fonts/visa.json" }]
