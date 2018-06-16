@@ -267,7 +267,7 @@ function executePost(urlPost, dataPost, useToastr = true) {
  */
 function loadDropdownsContent(data) {
 
-    var objSource = [{ "key": "nationality", "url": "../fonts/countries.json" }, { "key": "visa", "url": "../fonts/visa.json" }]
+    var objSource = [{ "key": "nationality", "url": "../Scripts/application/countries.json" }, { "key": "visa", "url": "../Scripts/application/visa.json" }]
 
     objSource.forEach(function (source) {
 

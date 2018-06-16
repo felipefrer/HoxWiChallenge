@@ -1,0 +1,57 @@
+﻿[
+  {
+    "name": "Stamp 0",
+    "code": "0",
+    "description": "Permission to stay for a temporary period."
+  },
+  {
+    "name": "Stamp 1",
+    "code": "1",
+    "description": "Permission to work or operate a business in Ireland."
+  },
+  {
+    "name": "Stamp 1A",
+    "code": "1A",
+    "description": "Permission in full time, paid accountancy training."
+  },
+  {
+    "name": "Stamp 1G",
+    "code": "1G",
+    "description": "Permission to look for employment."
+  },
+  {
+    "name": "Stamp 2",
+    "code": "2",
+    "description": "Student by the ILEP."
+  },
+  {
+    "name": "Stamp 2A",
+    "code": "2A",
+    "description": "Non student by the ILEP."
+  },
+  {
+    "name": "Stamp 3",
+    "code": "3",
+    "description": "Non-EEA dependent."
+  },
+  {
+    "name": "Stamp 4",
+    "code": "4",
+    "description": "Permission to stay in Ireland for a temporary period."
+  },
+  {
+    "name": "Stamp 4EU FAM",
+    "code": "4EU",
+    "description": "Non-EEA national family member of an EU national."
+  },
+  {
+    "name": "Stamp 5",
+    "code": "5",
+    "description": "Non-EEA nationals."
+  },
+  {
+    "name": "Stamp 6",
+    "code": "6",
+    "description": "Irish citizens with dual citizenship."
+  }
+]
