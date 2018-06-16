@@ -39,23 +39,9 @@
 
 @section scripts {
 
-    <link href="~/Content/jquery.bootgrid.css" rel="stylesheet" />
-    <link href="~/Content/toastr.css" rel="stylesheet" />
-    <link href="~/Content/jquery.alertable.css" rel="stylesheet" />
-    <link href="~/Content/pretty-checkbox.css" rel="stylesheet" />
-    <link href="~/Content/bootstrap-datepicker3.css" rel="stylesheet" />
-    <link href="~/Content/flag-icon.css" rel="stylesheet" />
-    <link href="~/Content/bootstrap-select.css" rel="stylesheet" />
-    <script src="~/Scripts/jquery.bootgrid.js"></script>
-    <script src="~/Scripts/jquery.validate.js"></script>
-    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
-    <script src="~/Scripts/jquery.alertable.js"></script>
-    <script src="~/Scripts/toastr.js"></script>
-    <script src="~/Scripts/jquery.formautofill.js"></script>
-    <script src="~/Scripts/moment.js"></script>
-    <script src="~/Scripts/bootstrap-datepicker.js"></script>
-    <script src="~/Scripts/bootstrap-select.js"></script>
-    <script src="~/Scripts/Application/foreign.js"></script>
+    @Styles.Render("~/Content/css/foreign")
+    @Scripts.Render("~/bundles/application", "~/bundles/foreign")
+
     <script type="text/javascript">
 
         var getForeignUrl = "@Url.Action("GetForeigns")";

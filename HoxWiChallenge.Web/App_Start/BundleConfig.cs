@@ -8,6 +8,9 @@ namespace HoxWiChallenge.Web
         // For more information on bundling, visit https://go.microsoft.com/fwlink/?LinkId=301862
         public static void RegisterBundles(BundleCollection bundles)
         {
+
+            #region Script Bundlers
+
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js"));
 
@@ -23,9 +26,36 @@ namespace HoxWiChallenge.Web
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/application").Include(
+                      "~/Scripts/application/foreign.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/foreign").Include(
+                      "~/Scripts/jquery.bootgrid.js",
+                      "~/Scripts/jquery.alertable.js",
+                      "~/Scripts/toastr.js",
+                      "~/Scripts/jquery.formautofill.js",
+                      "~/Scripts/moment.js",
+                      "~/Scripts/bootstrap-datepicker.js",
+                      "~/Scripts/bootstrap-select.js"));
+
+            #endregion
+
+            #region CSS Bundlers
+
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap.css",
-                      "~/Content/site.css"));
+            "~/Content/bootstrap.css",
+            "~/Content/site.css"));
+
+            bundles.Add(new StyleBundle("~/Content/css/foreign").Include(
+              "~/Content/jquery.bootgrid.css",
+              "~/Content/toastr.css",
+              "~/Content/jquery.alertable.css",
+              "~/Content/pretty-checkbox.css",
+              "~/Content/bootstrap-datepicker3.css",
+              "~/Content/flag-icon.css",
+              "~/Content/bootstrap-select.css"));
+
+            #endregion
         }
     }
 }
